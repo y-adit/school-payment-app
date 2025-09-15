@@ -1,10 +1,5 @@
-Perfect idea 🚀 — having a solid **README** with API docs will make your repo professional and super clear for anyone reviewing it.
 
-Here’s a ready-made README.md draft you can paste into your GitHub repo. I’ve written it in a **comprehensive API documentation style**, covering all the backend endpoints we’ve discussed:
 
----
-
-markdown
 # 🎓 School Payment API
 
 A Node.js + Express + MongoDB backend for managing **school fee payments**, with JWT authentication, integration with a payment gateway, and webhook handling.
