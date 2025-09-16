@@ -6,11 +6,7 @@ const OrderStatus = require("../models/orderStatus.model");
 const WebhookLog = require("../models/webhookLog.model");
 
 // Decide API endpoint based on env
-const PAYMENT_GATEWAY_URL =
-  process.env.PAYMENT_ENV === "production"
-    ? process.env.PAYMENT_GATEWAY_PROD
-    : process.env.PAYMENT_GATEWAY_SANDBOX;
-
+const PAYMENT_GATEWAY_URL = 'https://api.eduvanz.com/create-collect-request';
 // @desc    Create a new payment request
 // @route   POST /api/payment/create
 exports.createPayment = async (req, res) => {
