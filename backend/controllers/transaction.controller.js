@@ -85,7 +85,7 @@ exports.getTransactions = async (req, res) => {
 
 // @desc    Get transaction status by its custom order ID
 // @route   GET /api/transactions/status/:custom_order_id
-const Order = require('../models/order.model');
+
 const OrderStatus = require('../models/orderStatus.model');
 
 // @desc    Get all transactions (Simplified Logic)
