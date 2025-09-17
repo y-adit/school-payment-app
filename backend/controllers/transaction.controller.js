@@ -85,33 +85,48 @@ exports.getTransactions = async (req, res) => {
 
 // @desc    Get transaction status by its custom order ID
 // @route   GET /api/transactions/status/:custom_order_id
-exports.getTransactionStatus = async (req, res) => {
+const Order = require('../models/order.model');
+const OrderStatus = require('../models/orderStatus.model');
+
+// @desc    Get all transactions (Simplified Logic)
+// @route   GET /api/transactions
+exports.getTransactions = async (req, res) => {
     try {
-        const { custom_order_id } = req.params;
+        const { page = 1, limit = 10 } = req.query;
+        const skip = (page - 1) * limit;
 
-        // Find the order by custom_order_id
-        const order = await Order.findOne({ custom_order_id });
+        // 1. Fetch all statuses with pagination
+        const statuses = await OrderStatus.find()
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(parseInt(limit))
+            .populate('collect_id') // IMPORTANT: This joins the data
+            .lean(); // Makes the data plain JavaScript objects
 
-        if (!order) {
-            return res.status(404).json({ message: 'Transaction not found' });
-        }
+        // 2. Get the total count for pagination
+        const total = await OrderStatus.countDocuments();
 
-        // Find the corresponding status
-        const orderStatus = await mongoose.model('OrderStatus').findOne({ collect_id: order._id });
-
-        if (!orderStatus) {
-            return res.status(404).json({ message: 'Transaction status not found' });
-        }
+        // 3. Format the data to match what the frontend expects
+        const formattedData = statuses.map(status => ({
+            collect_id: status.collect_id._id,
+            school_id: status.collect_id.school_id,
+            gateway: status.collect_id.gateway_name,
+            order_amount: status.order_amount,
+            transaction_amount: status.transaction_amount,
+            status: status.status,
+            custom_order_id: status.collect_id.custom_order_id,
+        }));
 
         res.status(200).json({
-            custom_order_id: order.custom_order_id,
-            status: orderStatus.status,
-            order_amount: orderStatus.order_amount,
-            transaction_amount: orderStatus.transaction_amount,
-            payment_time: orderStatus.payment_time
+            total,
+            page: parseInt(page),
+            limit: parseInt(limit),
+            pages: Math.ceil(total / limit),
+            data: formattedData,
         });
+
     } catch (error) {
-        console.error('Error fetching transaction status:', error);
+        console.error('Error fetching transactions:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
