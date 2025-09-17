@@ -6,7 +6,7 @@ const OrderStatus = require("../models/orderStatus.model");
 const WebhookLog = require("../models/webhookLog.model");
 
 // Decide API endpoint based on env
-const PAYMENT_GATEWAY_URL = 'https://api.eduvanz.com/create-collect-request';
+//const PAYMENT_GATEWAY_URL = 'https://api.eduvanz.com/create-collect-request';
 // @desc    Create a new payment request
 // @route   POST /api/payment/create
 exports.createPayment = async (req, res) => {
@@ -49,7 +49,13 @@ exports.createPayment = async (req, res) => {
     const signedPayload = jwt.sign(payload, process.env.PAYMENT_API_KEY);
 
     // 6. Send request to payment gateway
-    const response = await axios.post(PAYMENT_GATEWAY_URL, { data: signedPayload });
+   // const response = await axios.post(PAYMENT_GATEWAY_URL, { data: signedPayload });
+   const response = {
+      data: {
+        status: "Success",
+        data: "https://example.com/fake-payment-link" // A dummy URL
+      }
+    };
 
     // 7. Return the payment link to the client
     if (response.data && response.data.status === "Success") {
