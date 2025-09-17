@@ -20,7 +20,23 @@ mongoose.connect(process.env.MONGO_URI)
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Middleware
-app.use(cors()); // Enable CORS for all routes
+const allowedOrigins = [
+  'https://schoolpaymentfrontend-eubl.onrender.com', // Your frontend's live URL
+  'http://localhost:5173' // Your frontend's local development URL
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like Postman)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
 app.use(express.json()); // Body parser
 
 // Mount routers
