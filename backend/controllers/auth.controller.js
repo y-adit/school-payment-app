@@ -36,11 +36,24 @@ exports.registerUser = async (req, res) => {
 
 // @desc    Auth user & get token
 // @route   POST /api/auth/login
+// @desc    Auth user & get token
+// @route   POST /api/auth/login
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
     try {
+        const User = require('../models/user.model'); // Make sure User model is required
         const user = await User.findOne({ email });
+
+        // Helper to generate token
+        const generateToken = (id) => {
+            const jwt = require('jsonwebtoken');
+            return jwt.sign({ id }, process.env.JWT_SECRET, {
+                expiresIn: process.env.JWT_EXPIRY || '1h',
+            });
+        };
+
         if (user && (await user.matchPassword(password))) {
+            // THIS IS THE CRUCIAL PART - It sends back the JSON with the token
             res.json({
                 _id: user._id,
                 email: user.email,
@@ -50,6 +63,7 @@ exports.loginUser = async (req, res) => {
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error) {
+        console.error('Login Error:', error);
         res.status(500).json({ message: 'Server Error', error: error.message });
     }
 };
