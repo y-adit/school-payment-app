@@ -7,7 +7,7 @@ const { protect } = require('../middleware/auth.middleware');
 router.use(protect);
 
 router.get('/', getTransactions);
-router.get('/school/:schoolId', getTransactions); // Re-use the same controller, filter is handled by query params
+router.get('/school/:schoolId', getTransactions);
 router.get('/status/:custom_order_id', getTransactionStatus);
 
 module.exports = router;
